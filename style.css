@@ -1,0 +1,1117 @@
+:root {
+    --couleur-principale: #007aff;
+    --couleur-fond: #f2f2f7;
+
+    --couleur-carte: #ffffff;
+    --couleur-texte: #1c1c1e;
+    --couleur-secondaire: #8e8e93;
+    --couleur-bordure: #d1d1d6;
+
+    --couleur-verte: #34c759;
+    --couleur-rouge: #ff3b30;
+    --couleur-orange: #ff9500;
+
+    --ombre-carte:
+        0 3px 14px
+        rgba(0, 0, 0, 0.06);
+}
+
+
+/* ===================================================== */
+/* BASE */
+/* ===================================================== */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
+
+body {
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    background:
+        var(--couleur-fond);
+
+    color:
+        var(--couleur-texte);
+
+    min-height: 100vh;
+
+    padding-bottom: 100px;
+
+    transition:
+        background 0.25s ease,
+        color 0.25s ease;
+}
+
+
+button,
+input,
+select {
+    font-family: inherit;
+}
+
+
+button {
+    cursor: pointer;
+}
+
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+
+.cachee {
+    display: none !important;
+}
+
+
+/* ===================================================== */
+/* TEXTE */
+/* ===================================================== */
+
+h1,
+h2,
+h3 {
+    line-height: 1.25;
+}
+
+
+h2 {
+    margin-bottom: 14px;
+}
+
+
+h3 {
+    margin-top: 18px;
+    margin-bottom: 10px;
+}
+
+
+p {
+    line-height: 1.45;
+}
+
+
+.texte-secondaire {
+    color:
+        var(--couleur-secondaire);
+
+    font-size: 14px;
+}
+
+
+/* ===================================================== */
+/* HEADER */
+/* ===================================================== */
+
+header {
+    background:
+        var(--couleur-principale);
+
+    color: white;
+
+    padding:
+        42px
+        20px
+        28px;
+
+    border-radius:
+        0
+        0
+        28px
+        28px;
+
+    box-shadow:
+        0 5px 20px
+        rgba(0, 0, 0, 0.12);
+}
+
+
+header h1 {
+    margin-bottom: 6px;
+}
+
+
+header p {
+    opacity: 0.9;
+}
+
+
+/* ===================================================== */
+/* CONTENU PRINCIPAL */
+/* ===================================================== */
+
+main {
+    width: 100%;
+
+    max-width: 760px;
+
+    margin: auto;
+
+    padding: 18px;
+}
+
+
+.page-app {
+    animation:
+        apparition
+        0.2s ease;
+}
+
+
+@keyframes apparition {
+
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* ===================================================== */
+/* SECTIONS */
+/* ===================================================== */
+
+.section,
+.resume,
+.configuration-section {
+    margin-bottom: 28px;
+}
+
+
+.section > h2,
+.resume > h2,
+.configuration-section > h2 {
+    margin-bottom: 14px;
+}
+
+
+/* ===================================================== */
+/* CARTES */
+/* ===================================================== */
+
+.argent-card,
+.info-card,
+.stat-card,
+.evenement-card,
+.membre-card,
+.invitation-card,
+.formulaire,
+.bloc-partage {
+    background:
+        var(--couleur-carte);
+
+    border:
+        1px solid
+        var(--couleur-bordure);
+
+    border-radius: 18px;
+
+    padding: 18px;
+
+    margin-bottom: 13px;
+
+    box-shadow:
+        var(--ombre-carte);
+}
+
+
+.bloc-partage {
+    margin-top: 18px;
+}
+
+
+.bloc-partage h3 {
+    margin-top: 0;
+}
+
+
+/* ===================================================== */
+/* ARGENT */
+/* ===================================================== */
+
+.argent-card p,
+.info-card p,
+.stat-card p {
+    color:
+        var(--couleur-secondaire);
+
+    font-size: 14px;
+
+    margin-bottom: 6px;
+}
+
+
+.argent-card h3 {
+    font-size: 27px;
+}
+
+
+.reste {
+    background:
+        var(--couleur-verte);
+
+    color: white;
+
+    border-color:
+        var(--couleur-verte);
+}
+
+
+.reste p {
+    color: white;
+}
+
+
+/* ===================================================== */
+/* FORMULAIRES */
+/* ===================================================== */
+
+.formulaire label {
+    display: block;
+
+    margin-top: 15px;
+
+    margin-bottom: 7px;
+
+    font-weight: 600;
+}
+
+
+.formulaire label:first-child {
+    margin-top: 0;
+}
+
+
+.formulaire input,
+.formulaire select,
+.auth-card input {
+    width: 100%;
+
+    min-height: 48px;
+
+    padding:
+        12px
+        13px;
+
+    border:
+        1px solid
+        var(--couleur-bordure);
+
+    border-radius: 11px;
+
+    font-size: 16px;
+
+    background:
+        var(--couleur-carte);
+
+    color:
+        var(--couleur-texte);
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.formulaire input:focus,
+.formulaire select:focus,
+.auth-card input:focus {
+    border-color:
+        var(--couleur-principale);
+
+    box-shadow:
+        0 0 0 3px
+        color-mix(
+            in srgb,
+            var(--couleur-principale) 18%,
+            transparent
+        );
+}
+
+
+/* ===================================================== */
+/* BOUTONS */
+/* ===================================================== */
+
+.formulaire button,
+.bouton-principal,
+.bouton-standard,
+.bouton-danger {
+    width: 100%;
+
+    border: none;
+
+    border-radius: 12px;
+
+    padding:
+        14px
+        16px;
+
+    margin-top: 14px;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    transition:
+        transform 0.12s ease,
+        opacity 0.12s ease;
+}
+
+
+button:active {
+    transform: scale(0.98);
+}
+
+
+.formulaire button,
+.bouton-principal {
+    background:
+        var(--couleur-principale);
+
+    color: white;
+}
+
+
+.bouton-standard {
+    background:
+        var(--couleur-carte);
+
+    color:
+        var(--couleur-texte);
+
+    border:
+        1px solid
+        var(--couleur-bordure);
+}
+
+
+.bouton-danger {
+    background:
+        var(--couleur-rouge);
+
+    color: white;
+}
+
+
+.bouton-lien {
+    width: 100%;
+
+    padding: 13px;
+
+    margin-top: 7px;
+
+    background: none;
+
+    border: none;
+
+    color:
+        var(--couleur-principale);
+
+    font-size: 15px;
+}
+
+
+/* ===================================================== */
+/* AUTHENTIFICATION */
+/* ===================================================== */
+
+.auth-container {
+    min-height: 100vh;
+
+    max-width: 500px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+
+.auth-card {
+    width: 100%;
+
+    background:
+        var(--couleur-carte);
+
+    padding: 28px;
+
+    border-radius: 22px;
+
+    border:
+        1px solid
+        var(--couleur-bordure);
+
+    box-shadow:
+        0 10px 35px
+        rgba(0, 0, 0, 0.08);
+}
+
+
+.auth-logo {
+    font-size: 56px;
+
+    text-align: center;
+
+    margin-bottom: 8px;
+}
+
+
+.auth-card h1,
+.auth-card > p {
+    text-align: center;
+}
+
+
+.auth-card > p {
+    margin-top: 7px;
+
+    margin-bottom: 22px;
+}
+
+
+.auth-card label {
+    display: block;
+
+    margin-top: 14px;
+
+    margin-bottom: 6px;
+
+    font-weight: 600;
+}
+
+
+.message-auth {
+    padding: 13px;
+
+    margin: 15px 0;
+
+    border-radius: 11px;
+
+    background:
+        rgba(0, 122, 255, 0.12);
+}
+
+
+.message-erreur {
+    background:
+        rgba(255, 59, 48, 0.12);
+
+    color:
+        var(--couleur-rouge);
+}
+
+
+/* ===================================================== */
+/* STATISTIQUES */
+/* ===================================================== */
+
+.stats-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 11px;
+
+    margin-bottom: 15px;
+}
+
+
+.stat-card {
+    margin-bottom: 0;
+}
+
+
+/* ===================================================== */
+/* CALENDRIER */
+/* ===================================================== */
+
+.calendrier-entete {
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+.calendrier-entete h2 {
+    margin-bottom: 0;
+
+    text-align: center;
+}
+
+
+.calendrier-entete button {
+    flex-shrink: 0;
+
+    width: 44px;
+
+    height: 44px;
+
+    background:
+        var(--couleur-principale);
+
+    border: none;
+
+    border-radius: 11px;
+
+    color: white;
+
+    font-size: 16px;
+}
+
+
+.jours-semaine,
+.grille-calendrier {
+    display: grid;
+
+    grid-template-columns:
+        repeat(7, minmax(0, 1fr));
+
+    gap: 5px;
+}
+
+
+.jours-semaine {
+    margin-top: 18px;
+
+    margin-bottom: 6px;
+
+    text-align: center;
+
+    color:
+        var(--couleur-secondaire);
+
+    font-size: 12px;
+
+    font-weight: 600;
+}
+
+
+.jour-calendrier {
+    position: relative;
+
+    min-height: 76px;
+
+    overflow: hidden;
+
+    padding: 6px;
+
+    background:
+        var(--couleur-carte);
+
+    border:
+        1px solid
+        var(--couleur-bordure);
+
+    border-radius: 9px;
+
+    transition:
+        border-color 0.15s ease,
+        transform 0.15s ease;
+}
+
+
+.jour-calendrier:not(
+    .jour-vide
+):hover {
+    border-color:
+        var(--couleur-principale);
+}
+
+
+.jour-vide {
+    border: none;
+
+    background: transparent;
+
+    box-shadow: none;
+}
+
+
+.numero-jour {
+    font-weight: 700;
+
+    font-size: 12px;
+
+    margin-bottom: 3px;
+}
+
+
+.evenement-calendrier {
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    font-size: 9px;
+
+    margin-top: 3px;
+
+    padding: 4px;
+
+    border-radius: 5px;
+
+    background:
+        color-mix(
+            in srgb,
+            var(--couleur-principale) 17%,
+            transparent
+        );
+
+    color:
+        var(--couleur-texte);
+}
+
+
+/* ===================================================== */
+/* ÉVÉNEMENTS */
+/* ===================================================== */
+
+.evenement-card strong {
+    display: block;
+
+    margin-bottom: 7px;
+}
+
+
+.evenement-card p {
+    margin-top: 4px;
+}
+
+
+/* ===================================================== */
+/* PARTAGE */
+/* ===================================================== */
+
+.membre-haut,
+.invitation-actions {
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+.membre-haut > div {
+    min-width: 0;
+}
+
+
+.membre-haut strong {
+    display: block;
+
+    overflow-wrap: anywhere;
+}
+
+
+.membre-haut .texte-secondaire {
+    margin-top: 3px;
+
+    overflow-wrap: anywhere;
+}
+
+
+.permission-public,
+.permission-prive {
+    flex-shrink: 0;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding:
+        6px
+        9px;
+
+    border-radius: 999px;
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+
+.permission-public {
+    color:
+        #248a3d;
+
+    background:
+        rgba(52, 199, 89, 0.13);
+}
+
+
+.permission-prive {
+    color:
+        #c66a00;
+
+    background:
+        rgba(255, 149, 0, 0.15);
+}
+
+
+.membre-card > p,
+.invitation-card > p {
+    margin-top: 8px;
+}
+
+
+.membre-card button,
+.invitation-card button {
+    border: none;
+
+    border-radius: 10px;
+
+    padding:
+        11px
+        13px;
+
+    margin-top: 11px;
+
+    font-weight: 600;
+}
+
+
+.membre-card > button {
+    width: 100%;
+
+    background:
+        var(--couleur-principale);
+
+    color: white;
+}
+
+
+.invitation-actions button {
+    flex: 1;
+}
+
+
+.bouton-accepter {
+    background:
+        var(--couleur-verte);
+
+    color: white;
+}
+
+
+.bouton-refuser {
+    background:
+        var(--couleur-rouge);
+
+    color: white;
+}
+
+
+/* ===================================================== */
+/* NAVIGATION */
+/* ===================================================== */
+
+nav {
+    position: fixed;
+
+    z-index: 1000;
+
+    bottom: 0;
+
+    left: 0;
+
+    right: 0;
+
+    min-height: 80px;
+
+    padding-bottom:
+        env(
+            safe-area-inset-bottom
+        );
+
+    background:
+        var(--couleur-carte);
+
+    border-top:
+        1px solid
+        var(--couleur-bordure);
+
+    display: flex;
+
+    box-shadow:
+        0 -4px 18px
+        rgba(0, 0, 0, 0.06);
+}
+
+
+nav button {
+    flex: 1;
+
+    min-width: 0;
+
+    background: none;
+
+    border: none;
+
+    color:
+        var(--couleur-secondaire);
+
+    font-size: 21px;
+
+    padding:
+        10px
+        4px;
+}
+
+
+nav button span {
+    display: block;
+
+    margin-top: 4px;
+
+    font-size: 11px;
+
+    font-weight: 500;
+}
+
+
+nav .nav-actif {
+    color:
+        var(--couleur-principale);
+}
+
+
+/* ===================================================== */
+/* MODE SOMBRE */
+/* ===================================================== */
+
+body.theme-sombre {
+    --couleur-carte: #1c1c1e;
+
+    --couleur-texte: #f5f5f7;
+
+    --couleur-secondaire: #aeaeb2;
+
+    --couleur-bordure: #3a3a3c;
+
+    --ombre-carte:
+        0 3px 14px
+        rgba(0, 0, 0, 0.22);
+}
+
+
+body.theme-clair {
+    --couleur-carte: #ffffff;
+
+    --couleur-texte: #1c1c1e;
+
+    --couleur-secondaire: #8e8e93;
+
+    --couleur-bordure: #d1d1d6;
+
+    --ombre-carte:
+        0 3px 14px
+        rgba(0, 0, 0, 0.06);
+}
+
+
+/* ===================================================== */
+/* IPHONE / PETITS ÉCRANS */
+/* ===================================================== */
+
+@media (
+    max-width: 600px
+) {
+
+    body {
+        padding-bottom:
+            calc(
+                90px +
+                env(
+                    safe-area-inset-bottom
+                )
+            );
+    }
+
+
+    header {
+        padding:
+            34px
+            17px
+            23px;
+
+        border-radius:
+            0
+            0
+            22px
+            22px;
+    }
+
+
+    header h1 {
+        font-size: 23px;
+    }
+
+
+    main {
+        padding: 14px;
+    }
+
+
+    .section,
+    .resume,
+    .configuration-section {
+        margin-bottom: 22px;
+    }
+
+
+    .argent-card,
+    .info-card,
+    .stat-card,
+    .evenement-card,
+    .membre-card,
+    .invitation-card,
+    .formulaire,
+    .bloc-partage {
+        padding: 15px;
+
+        border-radius: 15px;
+    }
+
+
+    .argent-card h3 {
+        font-size: 24px;
+    }
+
+
+    .jour-calendrier {
+        min-height: 61px;
+
+        padding: 4px;
+
+        border-radius: 7px;
+    }
+
+
+    .jours-semaine,
+    .grille-calendrier {
+        gap: 3px;
+    }
+
+
+    .jours-semaine {
+        font-size: 10px;
+    }
+
+
+    .numero-jour {
+        font-size: 10px;
+    }
+
+
+    .evenement-calendrier {
+        padding: 2px;
+
+        font-size: 7px;
+    }
+
+
+    .membre-haut {
+        align-items:
+            flex-start;
+    }
+
+
+    .invitation-actions {
+        flex-direction: column;
+    }
+
+
+    .invitation-actions button {
+        width: 100%;
+
+        margin-top: 6px;
+    }
+
+
+    nav {
+        min-height: 74px;
+    }
+
+
+    nav button {
+        font-size: 19px;
+    }
+
+
+    nav button span {
+        font-size: 10px;
+    }
+}
+
+
+/* ===================================================== */
+/* TRÈS PETITS ÉCRANS */
+/* ===================================================== */
+
+@media (
+    max-width: 380px
+) {
+
+    main {
+        padding-left: 10px;
+
+        padding-right: 10px;
+    }
+
+
+    .jour-calendrier {
+        min-height: 54px;
+    }
+
+
+    .evenement-calendrier {
+        font-size: 6px;
+    }
+
+
+    .permission-public,
+    .permission-prive {
+        padding:
+            5px
+            7px;
+
+        font-size: 10px;
+    }
+}

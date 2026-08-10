@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#007aff"
+        id="meta-theme-color"
+    >
+
+    <title>Notre Calendrier</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+</head>
+
+<body>
+
+    <!-- ================================================== -->
+    <!-- AUTHENTIFICATION -->
+    <!-- ================================================== -->
+
+    <main
+        id="zone-auth"
+        class="auth-container"
+    >
+
+        <section class="auth-card">
+
+            <div class="auth-logo">
+                📅
+            </div>
+
+            <h1>
+                Notre Calendrier
+            </h1>
+
+            <p class="texte-secondaire">
+                Connecte-toi pour accéder à ton calendrier.
+            </p>
+
+
+            <div
+                id="message-auth"
+                class="message-auth cachee"
+            ></div>
+
+
+            <!-- CONNEXION -->
+
+            <div id="form-connexion">
+
+                <h2>
+                    Se connecter
+                </h2>
+
+
+                <label for="connexion-email">
+                    Adresse courriel
+                </label>
+
+                <input
+                    type="email"
+                    id="connexion-email"
+                    autocomplete="email"
+                    placeholder="exemple@email.com"
+                >
+
+
+                <label for="connexion-password">
+                    Mot de passe
+                </label>
+
+                <input
+                    type="password"
+                    id="connexion-password"
+                    autocomplete="current-password"
+                    placeholder="Mot de passe"
+                >
+
+
+                <button
+                    class="bouton-principal"
+                    type="button"
+                    onclick="seConnecter()"
+                >
+                    Se connecter
+                </button>
+
+
+                <button
+                    class="bouton-lien"
+                    type="button"
+                    onclick="afficherCreationCompte()"
+                >
+                    Créer un compte
+                </button>
+
+            </div>
+
+
+            <!-- CRÉATION COMPTE -->
+
+            <div
+                id="form-creation"
+                class="cachee"
+            >
+
+                <h2>
+                    Créer un compte
+                </h2>
+
+
+                <label for="creation-nom">
+                    Ton nom
+                </label>
+
+                <input
+                    type="text"
+                    id="creation-nom"
+                    autocomplete="name"
+                    placeholder="Ton nom"
+                >
+
+
+                <label for="creation-email">
+                    Adresse courriel
+                </label>
+
+                <input
+                    type="email"
+                    id="creation-email"
+                    autocomplete="email"
+                    placeholder="exemple@email.com"
+                >
+
+
+                <label for="creation-password">
+                    Mot de passe
+                </label>
+
+                <input
+                    type="password"
+                    id="creation-password"
+                    autocomplete="new-password"
+                    placeholder="Minimum 6 caractères"
+                >
+
+
+                <label for="creation-password-confirm">
+                    Confirmer le mot de passe
+                </label>
+
+                <input
+                    type="password"
+                    id="creation-password-confirm"
+                    autocomplete="new-password"
+                    placeholder="Confirme le mot de passe"
+                >
+
+
+                <button
+                    class="bouton-principal"
+                    type="button"
+                    onclick="creerCompte()"
+                >
+                    Créer mon compte
+                </button>
+
+
+                <button
+                    class="bouton-lien"
+                    type="button"
+                    onclick="afficherConnexion()"
+                >
+                    J'ai déjà un compte
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ================================================== -->
+    <!-- APPLICATION -->
+    <!-- ================================================== -->
+
+    <div
+        id="zone-application"
+        class="cachee"
+    >
+
+        <header>
+
+            <h1>
+                Notre Calendrier 📅
+            </h1>
+
+            <p id="utilisateur-connecte">
+                Connecté
+            </p>
+
+        </header>
+
+
+        <main>
+
+            <!-- ========================================== -->
+            <!-- CONFIGURATION INITIALE DE LA PAIE -->
+            <!-- ========================================== -->
+
+            <section
+                id="configuration-initiale"
+                class="configuration-section"
+            >
+
+                <h2>
+                    ⚙️ Configuration de ta paie
+                </h2>
+
+                <p class="texte-secondaire">
+                    Configure ta fréquence de paie une seule fois.
+                    Tu pourras la modifier plus tard dans les paramètres.
+                </p>
+
+
+                <div class="formulaire">
+
+                    <label for="frequence-paie">
+                        À quelle fréquence es-tu payé ?
+                    </label>
+
+                    <select id="frequence-paie">
+
+                        <option value="Hebdomadaire">
+                            Chaque semaine
+                        </option>
+
+                        <option value="DeuxSemaines">
+                            Toutes les 2 semaines
+                        </option>
+
+                        <option value="DeuxFoisMois">
+                            Deux fois par mois
+                        </option>
+
+                        <option value="Mensuelle">
+                            Chaque mois
+                        </option>
+
+                    </select>
+
+
+                    <label for="date-reference-paie">
+                        Une date où tu reçois ta paie
+                    </label>
+
+                    <input
+                        type="date"
+                        id="date-reference-paie"
+                    >
+
+
+                    <button
+                        type="button"
+                        onclick="enregistrerConfigurationPaie()"
+                    >
+                        ✅ Commencer
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- ========================================== -->
+            <!-- APPLICATION PRINCIPALE -->
+            <!-- ========================================== -->
+
+            <div id="application-principale">
+
+
+                <!-- ====================================== -->
+                <!-- ACCUEIL -->
+                <!-- ====================================== -->
+
+                <section
+                    id="page-accueil"
+                    class="page-app"
+                >
+
+                    <section class="resume">
+
+                        <h2>
+                            💰 Cette paie
+                        </h2>
+
+
+                        <div class="argent-card">
+
+                            <p>
+                                Paie reçue
+                            </p>
+
+                            <h3 id="paie">
+                                0,00 $
+                            </h3>
+
+                        </div>
+
+
+                        <div class="argent-card">
+
+                            <p>
+                                Factures sur cette paie
+                            </p>
+
+                            <h3 id="factures-periode">
+                                0,00 $
+                            </h3>
+
+                        </div>
+
+
+                        <div class="argent-card reste">
+
+                            <p>
+                                Il me reste
+                            </p>
+
+                            <h3 id="reste">
+                                0,00 $
+                            </h3>
+
+                        </div>
+
+                    </section>
+
+
+                    <section class="section">
+
+                        <button
+                            class="bouton-principal"
+                            onclick="ajouterPaie()"
+                        >
+                            💰 Entrer ma paie
+                        </button>
+
+                    </section>
+
+
+                    <section class="section">
+
+                        <h2>
+                            🧾 Factures de cette paie
+                        </h2>
+
+                        <div id="liste-factures-periode">
+
+                            <p class="texte-secondaire">
+                                Aucune facture sur cette paie.
+                            </p>
+
+                        </div>
+
+                    </section>
+
+
+                    <section class="section">
+
+                        <div class="info-card">
+
+                            <p>
+                                📅 Période actuelle
+                            </p>
+
+                            <strong>
+
+                                <span id="periode-debut">
+                                    -
+                                </span>
+
+                                →
+
+                                <span id="periode-fin">
+                                    -
+                                </span>
+
+                            </strong>
+
+                        </div>
+
+                    </section>
+
+                </section>
+
+
+                <!-- ====================================== -->
+                <!-- CALENDRIER -->
+                <!-- ====================================== -->
+
+                <section
+                    id="page-calendrier"
+                    class="page-app cachee"
+                >
+
+                    <!-- SÉLECTEUR CALENDRIER -->
+
+                    <section class="section">
+
+                        <h2>
+                            📅 Calendrier affiché
+                        </h2>
+
+                        <div class="formulaire">
+
+                            <label for="select-calendrier">
+                                Choisir un calendrier
+                            </label>
+
+                            <select
+                                id="select-calendrier"
+                                onchange="changerCalendrierAffiche(this.value)"
+                            >
+
+                                <option value="">
+                                    👤 Mon calendrier
+                                </option>
+
+                            </select>
+
+
+                            <p
+                                id="info-calendrier-selection"
+                                class="texte-secondaire"
+                            >
+                                Ton calendrier personnel.
+                            </p>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- CALENDRIER VISUEL -->
+
+                    <section class="section">
+
+                        <div class="calendrier-entete">
+
+                            <button
+                                type="button"
+                                onclick="moisPrecedent()"
+                            >
+                                ◀
+                            </button>
+
+
+                            <h2 id="titre-mois">
+                                Calendrier
+                            </h2>
+
+
+                            <button
+                                type="button"
+                                onclick="moisSuivant()"
+                            >
+                                ▶
+                            </button>
+
+                        </div>
+
+
+                        <div class="jours-semaine">
+
+                            <div>Dim</div>
+
+                            <div>Lun</div>
+
+                            <div>Mar</div>
+
+                            <div>Mer</div>
+
+                            <div>Jeu</div>
+
+                            <div>Ven</div>
+
+                            <div>Sam</div>
+
+                        </div>
+
+
+                        <div
+                            id="calendrier"
+                            class="grille-calendrier"
+                        ></div>
+
+                    </section>
+
+
+                    <!-- AJOUTER / MODIFIER JOURNÉE -->
+
+                    <section
+                        class="section"
+                        id="zone-formulaire-evenement"
+                    >
+
+                        <h2 id="titre-formulaire-evenement">
+                            ➕ Ajouter une journée
+                        </h2>
+
+
+                        <div class="formulaire">
+
+                            <input
+                                type="hidden"
+                                id="evenement-id"
+                            >
+
+
+                            <label for="personne">
+                                Personne
+                            </label>
+
+                            <select id="personne">
+
+                                <option value="Moi">
+                                    👤 Moi
+                                </option>
+
+                            </select>
+
+
+                            <label for="type-evenement">
+                                Type
+                            </label>
+
+                            <select id="type-evenement">
+
+                                <option value="Travail">
+                                    💼 Travail
+                                </option>
+
+                                <option value="Ecole">
+                                    🎓 École
+                                </option>
+
+                            </select>
+
+
+                            <label for="date-evenement">
+                                Date
+                            </label>
+
+                            <input
+                                type="date"
+                                id="date-evenement"
+                            >
+
+
+                            <label for="heure-debut">
+                                Heure de début
+                            </label>
+
+                            <input
+                                type="time"
+                                id="heure-debut"
+                            >
+
+
+                            <label for="heure-fin">
+                                Heure de fin
+                            </label>
+
+                            <input
+                                type="time"
+                                id="heure-fin"
+                            >
+
+
+                            <label for="repetition-evenement">
+                                Répétition
+                            </label>
+
+                            <select id="repetition-evenement">
+
+                                <option value="Aucune">
+                                    Une seule fois
+                                </option>
+
+                                <option value="Hebdomadaire">
+                                    Chaque semaine
+                                </option>
+
+                            </select>
+
+
+                            <button
+                                id="bouton-enregistrer-evenement"
+                                type="button"
+                                onclick="enregistrerEvenement()"
+                            >
+                                + Ajouter au calendrier
+                            </button>
+
+
+                            <button
+                                id="bouton-annuler-modification"
+                                class="bouton-standard cachee"
+                                type="button"
+                                onclick="annulerModificationEvenement()"
+                            >
+                                Annuler
+                            </button>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- JOURNÉES -->
+
+                    <section class="section">
+
+                        <h2>
+                            📋 Journées enregistrées
+                        </h2>
+
+                        <div id="evenements">
+
+                            <p class="texte-secondaire">
+                                Aucune journée enregistrée.
+                            </p>
+
+                        </div>
+
+                    </section>
+
+                </section>
+
+
+                <!-- ====================================== -->
+                <!-- ARGENT -->
+                <!-- ====================================== -->
+
+                <section
+                    id="page-argent"
+                    class="page-app cachee"
+                >
+
+                    <!-- DÉPENSES -->
+
+                    <section class="section">
+
+                        <h2>
+                            💳 Mes dépenses
+                        </h2>
+
+
+                        <div class="argent-card">
+
+                            <p>
+                                Dépenses de la période
+                            </p>
+
+                            <h3 id="depenses">
+                                0,00 $
+                            </h3>
+
+                        </div>
+
+
+                        <button
+                            class="bouton-standard"
+                            type="button"
+                            onclick="ajouterDepense()"
+                        >
+                            💳 Ajouter une dépense
+                        </button>
+
+
+                        <button
+                            class="bouton-standard"
+                            type="button"
+                            onclick="reinitialiserDepenses()"
+                        >
+                            ♻️ Remettre à 0
+                        </button>
+
+                    </section>
+
+
+                    <!-- HISTORIQUE -->
+
+                    <section class="section">
+
+                        <h2>
+                            📊 Historique des paies
+                        </h2>
+
+
+                        <div class="stats-grid">
+
+                            <div class="stat-card">
+
+                                <p>
+                                    Paies
+                                </p>
+
+                                <strong id="total-paie-mois">
+                                    0,00 $
+                                </strong>
+
+                            </div>
+
+
+                            <div class="stat-card">
+
+                                <p>
+                                    Factures
+                                </p>
+
+                                <strong id="total-factures-mois">
+                                    0,00 $
+                                </strong>
+
+                            </div>
+
+
+                            <div class="stat-card">
+
+                                <p>
+                                    Dépenses
+                                </p>
+
+                                <strong id="total-depenses-mois">
+                                    0,00 $
+                                </strong>
+
+                            </div>
+
+
+                            <div class="stat-card">
+
+                                <p>
+                                    Reste
+                                </p>
+
+                                <strong id="total-reste-mois">
+                                    0,00 $
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <div id="historique-paies">
+
+                            <p class="texte-secondaire">
+                                Aucune paie enregistrée.
+                            </p>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- FACTURES -->
+
+                    <section class="section">
+
+                        <h2>
+                            🧾 Ajouter une facture
+                        </h2>
+
+
+                        <div class="formulaire">
+
+                            <label for="nom-facture">
+                                Nom
+                            </label>
+
+                            <input
+                                type="text"
+                                id="nom-facture"
+                                placeholder="Ex. Assurance auto"
+                            >
+
+
+                            <label for="montant-facture">
+                                Montant
+                            </label>
+
+                            <input
+                                type="number"
+                                id="montant-facture"
+                                step="0.01"
+                                min="0"
+                                placeholder="0.00"
+                            >
+
+
+                            <label for="date-facture">
+                                Première date
+                            </label>
+
+                            <input
+                                type="date"
+                                id="date-facture"
+                            >
+
+
+                            <label for="repetition-facture">
+                                Répétition
+                            </label>
+
+                            <select id="repetition-facture">
+
+                                <option value="Aucune">
+                                    Une seule fois
+                                </option>
+
+                                <option value="Hebdomadaire">
+                                    Chaque semaine
+                                </option>
+
+                                <option value="DeuxSemaines">
+                                    Toutes les 2 semaines
+                                </option>
+
+                                <option value="Mensuelle">
+                                    Tous les mois
+                                </option>
+
+                                <option value="Annuelle">
+                                    Tous les ans
+                                </option>
+
+                            </select>
+
+
+                            <button
+                                type="button"
+                                onclick="ajouterNouvelleFacture()"
+                            >
+                                + Ajouter la facture
+                            </button>
+
+                        </div>
+
+
+                        <div id="liste-factures">
+
+                            <p class="texte-secondaire">
+                                Aucune facture enregistrée.
+                            </p>
+
+                        </div>
+
+                    </section>
+
+                </section>
+
+
+                <!-- ====================================== -->
+                <!-- PARAMÈTRES -->
+                <!-- ====================================== -->
+
+                <section
+                    id="page-parametres"
+                    class="page-app cachee"
+                >
+
+                    <!-- COMPTE -->
+
+                    <section class="section">
+
+                        <h2>
+                            👤 Mon compte
+                        </h2>
+
+
+                        <div class="formulaire">
+
+                            <p id="email-parametres">
+                                -
+                            </p>
+
+
+                            <button
+                                class="bouton-danger"
+                                type="button"
+                                onclick="seDeconnecter()"
+                            >
+                                🚪 Se déconnecter
+                            </button>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- PARTAGE -->
+
+                    <section class="section">
+
+                        <h2>
+                            👥 Partage du calendrier
+                        </h2>
+
+
+                        <p class="texte-secondaire">
+                            Le partage concerne uniquement ton calendrier.
+                            Tes paies, dépenses et factures restent privées.
+                        </p>
+
+
+                        <!-- INVITER -->
+
+                        <div class="formulaire">
+
+                            <label for="email-invitation">
+                                Inviter une personne
+                            </label>
+
+                            <input
+                                type="email"
+                                id="email-invitation"
+                                placeholder="exemple@email.com"
+                            >
+
+
+                            <button
+                                type="button"
+                                onclick="envoyerInvitation()"
+                            >
+                                ✉️ Envoyer l'invitation
+                            </button>
+
+                        </div>
+
+
+                        <!-- INVITATIONS REÇUES -->
+
+                        <div class="bloc-partage">
+
+                            <h3>
+                                📨 Invitations reçues
+                            </h3>
+
+
+                            <div id="invitations-recues">
+
+                                <p class="texte-secondaire">
+                                    Aucune invitation.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- QUI PEUT VOIR MON CALENDRIER -->
+
+                        <div class="bloc-partage">
+
+                            <h3>
+                                👤 Qui peut voir mon calendrier
+                            </h3>
+
+
+                            <p class="texte-secondaire">
+                                Tu peux rendre ton calendrier public ou privé
+                                pour chaque personne invitée.
+                            </p>
+
+
+                            <div id="liste-membres">
+
+                                <p class="texte-secondaire">
+                                    Aucune personne invitée.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- CALENDRIERS PARTAGÉS AVEC MOI -->
+
+                        <div class="bloc-partage">
+
+                            <h3>
+                                📅 Calendriers partagés avec moi
+                            </h3>
+
+
+                            <div id="liste-calendriers-partages">
+
+                                <p class="texte-secondaire">
+                                    Aucun calendrier partagé avec toi.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- PAIE -->
+
+                    <section class="section">
+
+                        <h2>
+                            ⚙️ Paramètres de paie
+                        </h2>
+
+
+                        <div class="formulaire">
+
+                            <label for="param-frequence-paie">
+                                Je suis payé
+                            </label>
+
+                            <select id="param-frequence-paie">
+
+                                <option value="Hebdomadaire">
+                                    Chaque semaine
+                                </option>
+
+                                <option value="DeuxSemaines">
+                                    Toutes les 2 semaines
+                                </option>
+
+                                <option value="DeuxFoisMois">
+                                    Deux fois par mois
+                                </option>
+
+                                <option value="Mensuelle">
+                                    Chaque mois
+                                </option>
+
+                            </select>
+
+
+                            <label for="param-date-reference">
+                                Date de référence
+                            </label>
+
+                            <input
+                                type="date"
+                                id="param-date-reference"
+                            >
+
+
+                            <button
+                                type="button"
+                                onclick="modifierConfigurationPaie()"
+                            >
+                                💾 Enregistrer
+                            </button>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- APPARENCE -->
+
+                    <section class="section">
+
+                        <h2>
+                            🎨 Apparence
+                        </h2>
+
+
+                        <div class="formulaire">
+
+                            <label for="theme-app">
+                                Thème
+                            </label>
+
+                            <select
+                                id="theme-app"
+                                onchange="modifierApparence()"
+                            >
+
+                                <option value="auto">
+                                    Automatique
+                                </option>
+
+                                <option value="clair">
+                                    Clair
+                                </option>
+
+                                <option value="sombre">
+                                    Sombre
+                                </option>
+
+                            </select>
+
+
+                            <label for="couleur-principale">
+                                Couleur principale
+                            </label>
+
+                            <input
+                                type="color"
+                                id="couleur-principale"
+                                onchange="modifierApparence()"
+                            >
+
+
+                            <label for="couleur-fond">
+                                Couleur du fond
+                            </label>
+
+                            <input
+                                type="color"
+                                id="couleur-fond"
+                                onchange="modifierApparence()"
+                            >
+
+
+                            <button
+                                type="button"
+                                onclick="reinitialiserApparence()"
+                            >
+                                ♻️ Réinitialiser
+                            </button>
+
+                        </div>
+
+                    </section>
+
+                </section>
+
+            </div>
+
+        </main>
+
+
+        <!-- ================================================== -->
+        <!-- NAVIGATION -->
+        <!-- ================================================== -->
+
+        <nav>
+
+            <button
+                id="nav-accueil"
+                class="nav-actif"
+                type="button"
+                onclick="changerPage('accueil')"
+            >
+                🏠
+
+                <span>
+                    Accueil
+                </span>
+            </button>
+
+
+            <button
+                id="nav-calendrier"
+                type="button"
+                onclick="changerPage('calendrier')"
+            >
+                📅
+
+                <span>
+                    Calendrier
+                </span>
+            </button>
+
+
+            <button
+                id="nav-argent"
+                type="button"
+                onclick="changerPage('argent')"
+            >
+                💰
+
+                <span>
+                    Argent
+                </span>
+            </button>
+
+
+            <button
+                id="nav-parametres"
+                type="button"
+                onclick="changerPage('parametres')"
+            >
+                ⚙️
+
+                <span>
+                    Paramètres
+                </span>
+            </button>
+
+        </nav>
+
+    </div>
+
+
+    <!-- ================================================== -->
+    <!-- SCRIPTS -->
+    <!-- ================================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="app.js"></script>
+
+</body>
+
+</html>
