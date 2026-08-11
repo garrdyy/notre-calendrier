@@ -55,32 +55,20 @@ let dateCalendrier = new Date();
 // 3. FINANCES PERSONNELLES
 // =====================================================
 
-let paie =
-    Number(
-        localStorage.getItem("paie")
-    ) || 0;
+// Les paies et dépenses sont synchronisées dans Supabase.
+let listePaies = [];
+let listeDepenses = [];
 
-let depenses =
-    Number(
-        localStorage.getItem("depenses")
-    ) || 0;
+// Valeurs calculées pour la période de paie courante.
+let paie = 0;
+let depenses = 0;
 
+// La configuration de paie reste locale à l'appareil pour l'instant.
 let frequencePaie =
-    localStorage.getItem(
-        "frequencePaie"
-    ) || "";
+    localStorage.getItem("frequencePaie") || "";
 
 let dateReferencePaie =
-    localStorage.getItem(
-        "dateReferencePaie"
-    ) || "";
-
-let historiquePaies =
-    JSON.parse(
-        localStorage.getItem(
-            "historiquePaies"
-        ) || "[]"
-    );
+    localStorage.getItem("dateReferencePaie") || "";
 
 
 // =====================================================
@@ -158,16 +146,6 @@ function convertirMontant(texte) {
 function sauvegarderLocal() {
 
     localStorage.setItem(
-        "paie",
-        String(paie)
-    );
-
-    localStorage.setItem(
-        "depenses",
-        String(depenses)
-    );
-
-    localStorage.setItem(
         "frequencePaie",
         frequencePaie
     );
@@ -175,13 +153,6 @@ function sauvegarderLocal() {
     localStorage.setItem(
         "dateReferencePaie",
         dateReferencePaie
-    );
-
-    localStorage.setItem(
-        "historiquePaies",
-        JSON.stringify(
-            historiquePaies
-        )
     );
 
     localStorage.setItem(
@@ -199,6 +170,7 @@ function sauvegarderLocal() {
         couleurFond
     );
 }
+
 
 
 // =====================================================
@@ -358,7 +330,7 @@ async function creerCompte() {
 
                 options: {
 
-                    emailRedirectTo:
+                   emailRedirectTo:
                         "https://garrdyy.github.io/notre-calendrier/",
 
                     data: {
@@ -1151,6 +1123,38 @@ function demarrerRealtime() {
                 async function() {
 
                     await chargerMembres();
+                }
+            )
+
+
+            .on(
+                "postgres_changes",
+                {
+                    event: "*",
+                    schema: "public",
+                    table: "paies",
+                    filter:
+                        "utilisateur_id=eq." +
+                        utilisateurActuel.id
+                },
+                async function() {
+                    await chargerPaies();
+                }
+            )
+
+
+            .on(
+                "postgres_changes",
+                {
+                    event: "*",
+                    schema: "public",
+                    table: "depenses",
+                    filter:
+                        "utilisateur_id=eq." +
+                        utilisateurActuel.id
+                },
+                async function() {
+                    await chargerDepenses();
                 }
             )
 
@@ -3715,127 +3719,224 @@ function obtenirFacturesPeriode() {
 
 
 // =====================================================
-// 23. RÉSUMÉ FINANCIER
+// 23. PAIES ET DÉPENSES SYNCHRONISÉES
 // =====================================================
+
+async function chargerPaies() {
+
+    if (!utilisateurActuel) {
+        return;
+    }
+
+    const { data, error } =
+        await supabaseClient
+            .from("paies")
+            .select("id, utilisateur_id, calendrier_id, date_paie, montant, created_at")
+            .eq("utilisateur_id", utilisateurActuel.id)
+            .order("date_paie", { ascending: false });
+
+    if (error) {
+        console.error("Erreur paies :", error);
+        listePaies = [];
+        mettreAJour();
+        return;
+    }
+
+    listePaies = (data || []).map(function(item) {
+        return {
+            ...item,
+            montant: Number(item.montant || 0)
+        };
+    });
+
+    mettreAJour();
+}
+
+
+async function chargerDepenses() {
+
+    if (!utilisateurActuel) {
+        return;
+    }
+
+    const { data, error } =
+        await supabaseClient
+            .from("depenses")
+            .select("id, utilisateur_id, calendrier_id, date_depense, montant, description, created_at")
+            .eq("utilisateur_id", utilisateurActuel.id)
+            .order("date_depense", { ascending: false });
+
+    if (error) {
+        console.error("Erreur dépenses :", error);
+        listeDepenses = [];
+        mettreAJour();
+        return;
+    }
+
+    listeDepenses = (data || []).map(function(item) {
+        return {
+            ...item,
+            montant: Number(item.montant || 0)
+        };
+    });
+
+    mettreAJour();
+}
+
+
+function estDateDansPeriode(dateTexte, debut, fin) {
+
+    if (!dateTexte || !debut || !fin) {
+        return false;
+    }
+
+    const date = dateDepuisTexte(dateTexte);
+
+    return Boolean(
+        date &&
+        date >= debut &&
+        date < fin
+    );
+}
+
+
+function obtenirPaiesPeriode(periode = obtenirPeriodePaie()) {
+
+    if (!periode) {
+        return [];
+    }
+
+    return listePaies.filter(function(item) {
+        return estDateDansPeriode(
+            item.date_paie,
+            periode.debut,
+            periode.fin
+        );
+    });
+}
+
+
+function obtenirDepensesPeriode(periode = obtenirPeriodePaie()) {
+
+    if (!periode) {
+        return [];
+    }
+
+    return listeDepenses.filter(function(item) {
+        return estDateDansPeriode(
+            item.date_depense,
+            periode.debut,
+            periode.fin
+        );
+    });
+}
+
+
+function obtenirFacturesEntre(debut, fin) {
+
+    if (!debut || !fin) {
+        return [];
+    }
+
+    const resultat = [];
+    const date = new Date(debut);
+
+    while (date < fin) {
+
+        listeFactures.forEach(function(facture) {
+
+            if (factureEstCeJour(facture, date)) {
+                resultat.push({
+                    facture: facture,
+                    date: new Date(date)
+                });
+            }
+        });
+
+        date.setDate(date.getDate() + 1);
+    }
+
+    return resultat;
+}
+
+
+function obtenirFacturesPeriode() {
+
+    const periode = obtenirPeriodePaie();
+
+    if (!periode) {
+        return [];
+    }
+
+    return obtenirFacturesEntre(
+        periode.debut,
+        periode.fin
+    );
+}
+
 
 function mettreAJour() {
 
-    const factures =
-        obtenirFacturesPeriode();
+    const periode = obtenirPeriodePaie();
+    const paiesPeriode = obtenirPaiesPeriode(periode);
+    const depensesPeriode = obtenirDepensesPeriode(periode);
+    const factures = obtenirFacturesPeriode();
 
+    paie = paiesPeriode.reduce(
+        (total, item) => total + Number(item.montant || 0),
+        0
+    );
 
-    const totalFactures =
-        factures.reduce(
-            function(
-                total,
-                item
-            ) {
+    depenses = depensesPeriode.reduce(
+        (total, item) => total + Number(item.montant || 0),
+        0
+    );
 
-                return (
-                    total +
-                    Number(
-                        item.facture
-                            .montant
-                    )
-                );
-            },
-            0
-        );
-
+    const totalFactures = factures.reduce(
+        (total, item) => total + Number(item.facture.montant || 0),
+        0
+    );
 
     const reste =
         paie -
         totalFactures -
         depenses;
 
-
-    if (
-        element("paie")
-    ) {
-
-        element(
-            "paie"
-        ).textContent =
-            formatArgent(
-                paie
-            );
+    if (element("paie")) {
+        element("paie").textContent =
+            formatArgent(paie);
     }
 
-
-    if (
-        element(
-            "factures-periode"
-        )
-    ) {
-
-        element(
-            "factures-periode"
-        ).textContent =
-            formatArgent(
-                totalFactures
-            );
+    if (element("factures-periode")) {
+        element("factures-periode").textContent =
+            formatArgent(totalFactures);
     }
 
-
-    if (
-        element(
-            "depenses"
-        )
-    ) {
-
-        element(
-            "depenses"
-        ).textContent =
-            formatArgent(
-                depenses
-            );
+    if (element("depenses")) {
+        element("depenses").textContent =
+            formatArgent(depenses);
     }
 
-
-    if (
-        element(
-            "reste"
-        )
-    ) {
-
-        element(
-            "reste"
-        ).textContent =
-            formatArgent(
-                reste
-            );
+    if (element("reste")) {
+        element("reste").textContent =
+            formatArgent(reste);
     }
-
-
-    const periode =
-        obtenirPeriodePaie();
-
 
     if (periode) {
 
-        element(
-            "periode-debut"
-        ).textContent =
-            periode.debut
-                .toLocaleDateString(
-                    "fr-CA"
-                );
+        if (element("periode-debut")) {
+            element("periode-debut").textContent =
+                periode.debut.toLocaleDateString("fr-CA");
+        }
 
-
-        element(
-            "periode-fin"
-        ).textContent =
-            periode.fin
-                .toLocaleDateString(
-                    "fr-CA"
-                );
+        if (element("periode-fin")) {
+            element("periode-fin").textContent =
+                periode.fin.toLocaleDateString("fr-CA");
+        }
     }
 
-
     afficherFacturesPeriode();
-
     afficherHistorique();
-
     sauvegarderLocal();
 }
 
@@ -3843,254 +3944,344 @@ function mettreAJour() {
 function afficherFacturesPeriode() {
 
     const zone =
-        element(
-            "liste-factures-periode"
-        );
-
+        element("liste-factures-periode");
 
     if (!zone) {
-
         return;
     }
-
 
     const factures =
         obtenirFacturesPeriode();
 
+    if (factures.length === 0) {
 
-    if (
-        factures.length === 0
-    ) {
-
-        zone.innerHTML =
-            `
+        zone.innerHTML = `
             <p class="texte-secondaire">
                 Aucune facture sur cette paie.
             </p>
-            `;
+        `;
 
         return;
     }
 
+    zone.innerHTML = "";
 
-    zone.innerHTML =
-        "";
+    factures.forEach(function(item) {
 
+        const bloc =
+            document.createElement("div");
 
-    factures.forEach(
-        function(item) {
+        bloc.className =
+            "evenement-card";
 
-            const bloc =
-                document.createElement(
-                    "div"
-                );
+        bloc.innerHTML = `
+            <strong>
+                🧾 ${echapperHTML(item.facture.nom)}
+            </strong>
 
+            <p>
+                📅 ${item.date.toLocaleDateString("fr-CA")}
+            </p>
 
-            bloc.className =
-                "evenement-card";
+            <p>
+                💰 ${formatArgent(item.facture.montant)}
+            </p>
+        `;
 
-
-            bloc.innerHTML = `
-
-                <strong>
-                    🧾 ${echapperHTML(item.facture.nom)}
-                </strong>
-
-                <p>
-                    📅 ${
-                        item.date
-                            .toLocaleDateString(
-                                "fr-CA"
-                            )
-                    }
-                </p>
-
-                <p>
-                    💰 ${formatArgent(item.facture.montant)}
-                </p>
-            `;
+        zone.appendChild(bloc);
+    });
+}
 
 
-            zone.appendChild(
-                bloc
+async function ajouterPaie() {
+
+    if (!utilisateurActuel || !monCalendrier) {
+        return;
+    }
+
+    const texte =
+        prompt("Combien as-tu reçu sur ta paie ?");
+
+    if (!texte) {
+        return;
+    }
+
+    const valeur =
+        convertirMontant(texte);
+
+    if (!Number.isFinite(valeur) || valeur <= 0) {
+        alert("Entre un montant valide.");
+        return;
+    }
+
+    const periode =
+        obtenirPeriodePaie();
+
+    if (!periode) {
+        alert("Configure d'abord ta fréquence et ta date de paie.");
+        return;
+    }
+
+    const datePaie =
+        dateVersTexte(periode.debut);
+
+    const paieExistante =
+        listePaies.find(function(item) {
+            return item.date_paie === datePaie;
+        });
+
+    let error = null;
+
+    if (paieExistante) {
+
+        const resultat =
+            await supabaseClient
+                .from("paies")
+                .update({
+                    montant: valeur,
+                    calendrier_id: monCalendrier.id
+                })
+                .eq("id", paieExistante.id)
+                .eq("utilisateur_id", utilisateurActuel.id);
+
+        error = resultat.error;
+
+    } else {
+
+        const resultat =
+            await supabaseClient
+                .from("paies")
+                .insert({
+                    utilisateur_id: utilisateurActuel.id,
+                    calendrier_id: monCalendrier.id,
+                    date_paie: datePaie,
+                    montant: valeur
+                });
+
+        error = resultat.error;
+    }
+
+    if (error) {
+        alert(error.message);
+        return;
+    }
+
+    await chargerPaies();
+}
+
+
+async function ajouterDepense() {
+
+    if (!utilisateurActuel || !monCalendrier) {
+        return;
+    }
+
+    const texte =
+        prompt("Montant de la dépense ?");
+
+    if (!texte) {
+        return;
+    }
+
+    const valeur =
+        convertirMontant(texte);
+
+    if (!Number.isFinite(valeur) || valeur <= 0) {
+        alert("Entre un montant valide.");
+        return;
+    }
+
+    const description =
+        prompt("Description de la dépense ? (facultatif)") || "";
+
+    const { error } =
+        await supabaseClient
+            .from("depenses")
+            .insert({
+                utilisateur_id: utilisateurActuel.id,
+                calendrier_id: monCalendrier.id,
+                date_depense: dateVersTexte(new Date()),
+                montant: valeur,
+                description: description.trim() || null
+            });
+
+    if (error) {
+        alert(error.message);
+        return;
+    }
+
+    await chargerDepenses();
+}
+
+
+async function reinitialiserDepenses() {
+
+    if (!utilisateurActuel) {
+        return;
+    }
+
+    const periode =
+        obtenirPeriodePaie();
+
+    if (!periode) {
+        return;
+    }
+
+    if (!confirm("Supprimer toutes les dépenses de cette période ?")) {
+        return;
+    }
+
+    const debut =
+        dateVersTexte(periode.debut);
+
+    const fin =
+        dateVersTexte(periode.fin);
+
+    const { error } =
+        await supabaseClient
+            .from("depenses")
+            .delete()
+            .eq("utilisateur_id", utilisateurActuel.id)
+            .gte("date_depense", debut)
+            .lt("date_depense", fin);
+
+    if (error) {
+        alert(error.message);
+        return;
+    }
+
+    await chargerDepenses();
+}
+
+
+// =====================================================
+// 24. HISTORIQUE SYNCHRONISÉ
+// =====================================================
+
+function obtenirFinPeriodeHistorique(dateDebut) {
+
+    if (!dateDebut) {
+        return null;
+    }
+
+    if (frequencePaie === "Hebdomadaire") {
+        return ajouterJours(dateDebut, 7);
+    }
+
+    if (frequencePaie === "DeuxSemaines") {
+        return ajouterJours(dateDebut, 14);
+    }
+
+    if (frequencePaie === "Mensuelle") {
+        return creerDateSecurisee(
+            dateDebut.getFullYear(),
+            dateDebut.getMonth() + 1,
+            dateDebut.getDate()
+        );
+    }
+
+    if (frequencePaie === "DeuxFoisMois") {
+
+        if (dateDebut.getDate() === 15) {
+            return new Date(
+                dateDebut.getFullYear(),
+                dateDebut.getMonth() + 1,
+                0
             );
         }
-    );
-}
 
-
-// =====================================================
-// 24. PAIE ET DÉPENSES
-// =====================================================
-
-function ajouterPaie() {
-
-    const texte =
-        prompt(
-            "Combien as-tu reçu sur ta paie ?"
+        return new Date(
+            dateDebut.getFullYear(),
+            dateDebut.getMonth() + 1,
+            15
         );
-
-
-    if (!texte) {
-
-        return;
     }
 
-
-    const valeur =
-        convertirMontant(
-            texte
-        );
-
-
-    if (
-        !Number.isFinite(
-            valeur
-        ) ||
-        valeur <= 0
-    ) {
-
-        return;
-    }
-
-
-    paie =
-        valeur;
-
-
-    mettreAJour();
+    return ajouterJours(dateDebut, 14);
 }
 
-
-function ajouterDepense() {
-
-    const texte =
-        prompt(
-            "Montant de la dépense ?"
-        );
-
-
-    if (!texte) {
-
-        return;
-    }
-
-
-    const valeur =
-        convertirMontant(
-            texte
-        );
-
-
-    if (
-        !Number.isFinite(
-            valeur
-        ) ||
-        valeur <= 0
-    ) {
-
-        return;
-    }
-
-
-    depenses +=
-        valeur;
-
-
-    mettreAJour();
-}
-
-
-function reinitialiserDepenses() {
-
-    depenses =
-        0;
-
-
-    mettreAJour();
-}
-
-
-// =====================================================
-// 25. HISTORIQUE
-// =====================================================
 
 function afficherHistorique() {
 
     const zone =
-        element(
-            "historique-paies"
-        );
-
+        element("historique-paies");
 
     if (!zone) {
-
         return;
     }
 
+    if (listePaies.length === 0) {
 
-    if (
-        historiquePaies.length === 0
-    ) {
-
-        zone.innerHTML =
-            `
+        zone.innerHTML = `
             <p class="texte-secondaire">
                 Aucune paie enregistrée.
             </p>
-            `;
-
+        `;
 
         afficherTotauxMensuels();
-
         return;
     }
 
+    zone.innerHTML = "";
 
-    zone.innerHTML =
-        "";
-
-
-    historiquePaies
+    listePaies
         .slice()
-        .reverse()
-        .forEach(
-            function(item) {
+        .sort(function(a, b) {
+            return String(b.date_paie).localeCompare(String(a.date_paie));
+        })
+        .forEach(function(item) {
 
-                const bloc =
-                    document.createElement(
-                        "div"
+            const debut =
+                dateDepuisTexte(item.date_paie);
+
+            const fin =
+                obtenirFinPeriodeHistorique(debut);
+
+            const depensesHistorique =
+                listeDepenses.filter(function(depense) {
+                    return estDateDansPeriode(
+                        depense.date_depense,
+                        debut,
+                        fin
                     );
+                });
 
-
-                bloc.className =
-                    "evenement-card";
-
-
-                bloc.innerHTML = `
-
-                    <strong>
-                        💵 ${echapperHTML(item.date)}
-                    </strong>
-
-                    <p>
-                        Paie :
-                        ${formatArgent(item.montant)}
-                    </p>
-
-                    <p>
-                        Reste :
-                        ${formatArgent(item.reste)}
-                    </p>
-                `;
-
-
-                zone.appendChild(
-                    bloc
+            const totalDepenses =
+                depensesHistorique.reduce(
+                    (total, depense) => total + Number(depense.montant || 0),
+                    0
                 );
-            }
-        );
 
+            const totalFactures =
+                obtenirFacturesEntre(debut, fin).reduce(
+                    (total, facture) => total + Number(facture.facture.montant || 0),
+                    0
+                );
+
+            const reste =
+                Number(item.montant || 0) -
+                totalFactures -
+                totalDepenses;
+
+            const bloc =
+                document.createElement("div");
+
+            bloc.className =
+                "evenement-card";
+
+            bloc.innerHTML = `
+                <strong>
+                    💵 Paie du ${debut.toLocaleDateString("fr-CA")}
+                </strong>
+
+                <p>Paie : ${formatArgent(item.montant)}</p>
+                <p>Factures : ${formatArgent(totalFactures)}</p>
+                <p>Dépenses : ${formatArgent(totalDepenses)}</p>
+                <p><strong>Reste : ${formatArgent(reste)}</strong></p>
+            `;
+
+            zone.appendChild(bloc);
+        });
 
     afficherTotauxMensuels();
 }
@@ -4098,55 +4289,60 @@ function afficherHistorique() {
 
 function afficherTotauxMensuels() {
 
-    if (
-        element(
-            "total-paie-mois"
-        )
-    ) {
+    const maintenant =
+        new Date();
 
-        element(
-            "total-paie-mois"
-        ).textContent =
-            formatArgent(0);
+    const debutMois =
+        new Date(
+            maintenant.getFullYear(),
+            maintenant.getMonth(),
+            1
+        );
+
+    const finMois =
+        new Date(
+            maintenant.getFullYear(),
+            maintenant.getMonth() + 1,
+            1
+        );
+
+    const totalPaies =
+        listePaies
+            .filter(item => estDateDansPeriode(item.date_paie, debutMois, finMois))
+            .reduce((total, item) => total + Number(item.montant || 0), 0);
+
+    const totalDepenses =
+        listeDepenses
+            .filter(item => estDateDansPeriode(item.date_depense, debutMois, finMois))
+            .reduce((total, item) => total + Number(item.montant || 0), 0);
+
+    const totalFactures =
+        obtenirFacturesEntre(debutMois, finMois)
+            .reduce((total, item) => total + Number(item.facture.montant || 0), 0);
+
+    const totalReste =
+        totalPaies -
+        totalFactures -
+        totalDepenses;
+
+    if (element("total-paie-mois")) {
+        element("total-paie-mois").textContent =
+            formatArgent(totalPaies);
     }
 
-
-    if (
-        element(
-            "total-factures-mois"
-        )
-    ) {
-
-        element(
-            "total-factures-mois"
-        ).textContent =
-            formatArgent(0);
+    if (element("total-factures-mois")) {
+        element("total-factures-mois").textContent =
+            formatArgent(totalFactures);
     }
 
-
-    if (
-        element(
-            "total-depenses-mois"
-        )
-    ) {
-
-        element(
-            "total-depenses-mois"
-        ).textContent =
-            formatArgent(0);
+    if (element("total-depenses-mois")) {
+        element("total-depenses-mois").textContent =
+            formatArgent(totalDepenses);
     }
 
-
-    if (
-        element(
-            "total-reste-mois"
-        )
-    ) {
-
-        element(
-            "total-reste-mois"
-        ).textContent =
-            formatArgent(0);
+    if (element("total-reste-mois")) {
+        element("total-reste-mois").textContent =
+            formatArgent(totalReste);
     }
 }
 
@@ -4541,6 +4737,10 @@ async function demarrerApplication() {
     await chargerCalendriersPartages();
 
     await chargerFactures();
+
+    await chargerPaies();
+
+    await chargerDepenses();
 
     await chargerEvenements();
 
