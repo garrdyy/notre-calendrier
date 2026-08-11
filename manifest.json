@@ -1,0 +1,22 @@
+{
+  "name": "Notre Calendrier",
+  "short_name": "Calendrier",
+  "description": "Calendrier personnel avec suivi des paies, factures et partage.",
+  "start_url": "/notre-calendrier/",
+  "scope": "/notre-calendrier/",
+  "display": "standalone",
+  "background_color": "#f2f2f7",
+  "theme_color": "#007aff",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
