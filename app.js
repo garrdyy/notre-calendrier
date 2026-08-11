@@ -1805,19 +1805,32 @@ async function chargerMembres() {
 
                 </p>
 
-                <button
-                    type="button"
-                    onclick="changerVisibiliteMembre(
-                        '${membre.utilisateur_id}',
-                        ${visible ? "false" : "true"}
-                    )"
-                >
-                    ${
-                        visible
-                            ? "🔒 Rendre privé"
-                            : "🟢 Rendre public"
-                    }
-                </button>
+                <div class="invitation-actions">
+                    <button
+                        type="button"
+                        onclick="changerVisibiliteMembre(
+                            '${membre.utilisateur_id}',
+                            ${visible ? "false" : "true"}
+                        )"
+                    >
+                        ${
+                            visible
+                                ? "🔒 Rendre privé"
+                                : "🟢 Rendre public"
+                        }
+                    </button>
+
+                    <button
+                        type="button"
+                        class="bouton-refuser"
+                        onclick="supprimerMembreCalendrier(
+                            '${membre.utilisateur_id}',
+                            '${echapperHTML(nom).replaceAll("'", "&#039;")}'
+                        )"
+                    >
+                        🗑️ Supprimer
+                    </button>
+                </div>
             `;
 
 
@@ -1869,6 +1882,64 @@ async function changerVisibiliteMembre(
 
 
     await chargerMembres();
+}
+
+
+async function supprimerMembreCalendrier(
+    utilisateurId,
+    nom = "cette personne"
+) {
+
+    if (!monCalendrier || !utilisateurId) {
+        return;
+    }
+
+
+    if (
+        !confirm(
+            "Supprimer " +
+            nom +
+            " de ton calendrier ?\n\nCette personne n'aura plus accès à ton calendrier."
+        )
+    ) {
+        return;
+    }
+
+
+    const {
+        error
+    } =
+        await supabaseClient.rpc(
+            "supprimer_membre_calendrier",
+            {
+                calendrier:
+                    monCalendrier.id,
+
+                membre:
+                    utilisateurId
+            }
+        );
+
+
+    if (error) {
+
+        alert(
+            "Impossible de supprimer cette personne : " +
+            error.message
+        );
+
+        return;
+    }
+
+
+    await chargerMembres();
+
+    await chargerCalendriersPartages();
+
+    alert(
+        nom +
+        " a été supprimé de ton calendrier."
+    );
 }
 
 

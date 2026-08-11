@@ -1,3 +1,47 @@
+
+function uiAfficherProchainePaie() {
+    const titre = document.getElementById("prochaine-paie");
+    const detail = document.getElementById("prochaine-paie-detail");
+    if (!titre || !detail) return;
+
+    const periode = obtenirPeriodePaie();
+
+    if (!periode || !periode.fin) {
+        titre.textContent = "À configurer";
+        detail.textContent = "Va dans Profil pour choisir ta fréquence et ta date de paie.";
+        return;
+    }
+
+    const prochaine = new Date(periode.fin);
+    prochaine.setHours(0, 0, 0, 0);
+
+    const aujourdHui = new Date();
+    aujourdHui.setHours(0, 0, 0, 0);
+
+    const jours = Math.max(
+        0,
+        Math.round((prochaine - aujourdHui) / 86400000)
+    );
+
+    titre.textContent = prochaine.toLocaleDateString(
+        "fr-CA",
+        {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+        }
+    );
+
+    if (jours === 0) {
+        detail.textContent = "C'est aujourd'hui 🎉";
+    } else if (jours === 1) {
+        detail.textContent = "Dans 1 jour";
+    } else {
+        detail.textContent = "Dans " + jours + " jours";
+    }
+}
+
 // =====================================================
 // NOTRE CALENDRIER - COUCHE D'INTERFACE FONCTIONNELLE
 // Garde app.js pour Supabase et ajoute le comportement du nouveau design.
@@ -168,6 +212,7 @@ function uiNombre(texte) {
 }
 
 function uiSynchroniserFinances() {
+    uiAfficherProchainePaie();
     const ids = [
         ["paie","paie-mirror"],
         ["paie","paie-page"],
