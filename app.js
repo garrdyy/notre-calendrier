@@ -359,7 +359,7 @@ async function creerCompte() {
                 options: {
 
                     emailRedirectTo:
-                        "http://127.0.0.1:5500/index.html",
+                        "https://garrdyy.github.io/notre-calendrier/",
 
                     data: {
                         nom
